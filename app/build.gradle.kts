@@ -2,11 +2,12 @@
 plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.org.jetbrains.kotlinx.kover)
 }
 
 android {
     namespace = "me.jerryokafor.bitrisemobiledevopssummit2023"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "me.jerryokafor.bitrisemobiledevopssummit2023"
@@ -22,6 +23,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            isTestCoverageEnabled = true
+//            enableAndroidTestCoverage = true
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -60,11 +65,43 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
+
+
+    implementation(libs.org.jetbrains.kotlinx.coroutines.android)
+    testImplementation(libs.org.jetbrains.kotlinx.coroutines.test)
+
     testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
+}
+
+koverReport {
+
+    filters { // common filters for all default Kover tasks
+        excludes {
+            classes(
+                "me.jerryokafor.bitrisemobiledevopssummit2023.ComposableSingletons*",
+            )
+        }
+    }
+    verify {
+        // verification rules for all report variants
+    }
+
+    androidReports("debug") {
+        filters {
+            // override report filters for all reports for `release` build variant
+            // all filters specified by the level above cease to work
+        }
+
+        xml {
+            onCheck = true
+        }
+        html { onCheck = true }
+    }
 }
